@@ -28,7 +28,6 @@ public class REsearch {
                 FSMSizeScanner.nextLine();
             }
             FSMSizeScanner.close();
-            int[] state = new int[FSMSize];
             char[] ch = new char[FSMSize];
             int[] n1 = new int[FSMSize];
             int[] n2 = new int[FSMSize];
@@ -36,11 +35,20 @@ public class REsearch {
             int i = 0;
             while(FSMScanner.hasNextLine()){
                 String data = FSMScanner.nextLine();
-                String parts[] = data.split(" ");
-                state[i] = Integer.parseInt(parts[0]);
-                ch[i] = parts[1].charAt(0);
-                n1[i] = Integer.parseInt(parts[2]);
-                n2[i] = Integer.parseInt(parts[3]);
+                String parts1[] = data.split(" ", 2);
+                if(parts1[1].charAt(0) != 32) {
+                    String parts[] = parts1[1].split(" ");
+                    ch[i] = parts[0].charAt(0);
+                    n1[i] = Integer.parseInt(parts[1]);
+                    n2[i] = Integer.parseInt(parts[2]);
+                }
+                else{
+                    parts1[1] = parts1[1].substring(2);
+                    String parts[] = parts1[1].split(" ");
+                    ch[i] = 32;
+                    n1[i] = Integer.parseInt(parts[0]);
+                    n2[i] = Integer.parseInt(parts[1]);
+                }
                 i++;
             }
 
@@ -85,9 +93,13 @@ public class REsearch {
                             } else if (ch[s] == currentChar) { //If we have a match then add the next possible states
                                 nextStates.add(n1[s]);
                                 nextStates.add(n2[s]);
-                            } else if (ch[s] == (char) 42) { //If the current state is a branching state add next states
+                            } else if (ch[s] == (char) 32) { //If the current state is a branching state add next states
                                 currentStates.push(n1[s]);
                                 currentStates.push(n2[s]);
+                            }
+                            else if (ch[s] == (char) 46){ //If the current state is a wildcard add the next states no matter the value of the char
+                                nextStates.add(n1[s]);
+                                nextStates.add(n2[s]);
                             }
                             seenStates.add(s);
                         }
